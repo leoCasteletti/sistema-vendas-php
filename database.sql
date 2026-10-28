@@ -1,61 +1,52 @@
-CREATE DATABASE IF NOT EXISTS vendas_01 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE vendas_01;
+CREATE DATABASE IF NOT EXISTS vendas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE vendas;
 
-CREATE TABLE cadastroclientes (
-    Cliente_ID INT NOT NULL AUTO_INCREMENT,
-    Cliente_Nome VARCHAR(45),
-    Cliente_Sobrenome VARCHAR(45),
-    Cliente_RG VARCHAR(20),
-    Cliente_CPF VARCHAR(14),
-    Cliente_DataNascimento VARCHAR(10),
-    Cliente_Genero VARCHAR(20),
-    Cliente_Endereco VARCHAR(100),
-    Cliente_Telefone VARCHAR(20),
-    PRIMARY KEY (Cliente_ID)
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(60) NOT NULL,
+    sobrenome VARCHAR(60) NOT NULL,
+    cpf CHAR(11) NOT NULL UNIQUE,
+    nascimento DATE NULL,
+    telefone VARCHAR(20) NULL,
+    endereco VARCHAR(120) NULL
 );
 
-CREATE TABLE cadastrovendedores (
-    Vendedor_ID INT NOT NULL AUTO_INCREMENT,
-    Vendedor_Nome VARCHAR(45),
-    Vendedor_Sobrenome VARCHAR(45),
-    Vendedor_Email VARCHAR(100),
-    Vendedor_DataNascimento VARCHAR(10),
-    Vendedor_CPF VARCHAR(14),
-    Vendedor_RG VARCHAR(20),
-    Vendedor_Endereco VARCHAR(100),
-    Vendedor_Telefone VARCHAR(20),
-    PRIMARY KEY (Vendedor_ID)
+CREATE TABLE vendedores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(60) NOT NULL,
+    sobrenome VARCHAR(60) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE,
+    cpf CHAR(11) NOT NULL UNIQUE,
+    telefone VARCHAR(20) NULL
 );
 
-CREATE TABLE cadastroprodutos (
-    Produto_ID INT NOT NULL AUTO_INCREMENT,
-    Produto_Codigo VARCHAR(45),
-    Produto_Fornecedor VARCHAR(45),
-    Produto_Descricao VARCHAR(100),
-    Produto_Estoque VARCHAR(20),
-    Produto_PrecoCusto VARCHAR(20),
-    Produto_PrecoVenda VARCHAR(20),
-    PRIMARY KEY (Produto_ID)
+CREATE TABLE produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(30) NOT NULL UNIQUE,
+    descricao VARCHAR(120) NOT NULL,
+    fornecedor VARCHAR(120) NULL,
+    estoque INT NOT NULL DEFAULT 0,
+    preco_custo DECIMAL(10,2) NOT NULL,
+    preco_venda DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE cadastropedidos (
-    Pedido_ID INT NOT NULL AUTO_INCREMENT,
-    Pedido_DataEmissao VARCHAR(10),
-    Pedido_HoraEmissao TIME,
-    Pedido_NotaFiscal VARCHAR(20),
-    Pedido_DataSaida VARCHAR(10),
-    Pedido_HoraSaida TIME,
-    Pedido_ValorFrete VARCHAR(20),
-    PRIMARY KEY (Pedido_ID)
+CREATE TABLE pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    vendedor_id INT NOT NULL,
+    emissao DATE NOT NULL,
+    nota_fiscal VARCHAR(20) NULL,
+    frete DECIMAL(10,2) NOT NULL DEFAULT 0,
+    FOREIGN KEY (cliente_id) REFERENCES clientes (id),
+    FOREIGN KEY (vendedor_id) REFERENCES vendedores (id)
 );
 
-CREATE TABLE itenspedido (
-    ItensPedido_ID INT NOT NULL AUTO_INCREMENT,
-    Produto_ID INT,
-    Pedido_ID INT,
-    Quantidade VARCHAR(20),
-    ValorUnitario VARCHAR(20),
-    PRIMARY KEY (ItensPedido_ID),
-    FOREIGN KEY (Produto_ID) REFERENCES cadastroprodutos (Produto_ID),
-    FOREIGN KEY (Pedido_ID) REFERENCES cadastropedidos (Pedido_ID)
+CREATE TABLE itens_pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos (id),
+    FOREIGN KEY (produto_id) REFERENCES produtos (id)
 );
